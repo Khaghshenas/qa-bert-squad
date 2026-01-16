@@ -1,0 +1,13 @@
+torch
+transformers
+datasets
+scikit-learn
+pandas
+numpy
+flask
+seqeval
+matplotlib
+hf_xet
+protobuf 
+pytest
+fastapi

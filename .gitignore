@@ -1,0 +1,18 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# Jupyter checkpoints
+.ipynb_checkpoints
+
+# Datasets (users can download separately)
+data/
+
+# Models
+models/
+
+# Logs
+logs/

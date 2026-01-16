@@ -1,0 +1,106 @@
+# BERT Question-Answering System (SQuAD)
+
+This project demonstrates an **end-to-end NLP pipeline** for question-answering using **DistilBERT**, trained on a **subset of the SQuAD dataset**.
+
+---
+
+The **Project Goal** is to:
+
+- Fine-tune a transformer-based model (DistilBERT) on a subset of the SQuAD dataset for **question-answering**.  
+- Implement a **reproducible pipeline** from data acquisition → preprocessing → model training → evaluation → deployment.  
+- Provide a **production-ready API** for real-time predictions.  
+
+> Note: A smaller subset of the dataset and DistilBERT are used for local CPU experimentation. Full dataset training on GPU is supported by the code for production use.
+
+---
+
+## Project Structure
+
+```text
+qa-bert-squad/
+├── data/ # raw & preprocessed dataset
+│ └── squad/
+├── src/
+│ ├──__init__.py
+│ ├── download_data.py 
+│ ├── preprocess.py # tokenize and preprocess dataset
+│ ├── train.py # fine-tune DistilBERT
+│ ├── evaluate.py # evaluate EM/F1 metrics
+│ └── api.py
+├── tests/
+│ ├── test_preprocess.py
+│ └── test_model.py
+├── models/ # trained model and tokenizer
+├── requirements.txt
+├── README.md
+├── .gitignore
+└── .github/  
+    └── workflows/
+        └── python-app.yml
+		
+*Note: The `data/` folder does not include the SQuAD dataset. You must download it from [SQuAD dataset](https://rajpurkar.github.io/SQuAD-explorer/) or let the `download_data.py` script download it automatically. Place the dataset in `data/squad/` if downloading manually.
+```
+
+## Setup & Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Khaghshenas/qa-bert-squad.git
+cd qa-bert-squad
+```
+
+2. Create a Python virtual environment and install dependencies:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Pipeline Overview
+
+1. Download Dataset
+```bash
+python src/download_data.py
+```
+This downloads the SQuAD dataset to data/squad/.
+
+2. Preprocess / Tokenize
+```bash
+python src/preprocess.py
+```
+- Tokenizes questions and contexts using DistilBERT tokenizer.
+- Saves tokenized data for training.
+
+3. Train Model
+```bash
+python src/train.py
+```
+- Fine-tunes DistilBERT on tokenized subset.
+- Saves model and tokenizer to models/bert-qa/.
+
+For demonstration, a small subset is used; full training is supported on GPU.
+
+4. Evaluate Model
+```bash
+python src/evaluate.py
+```
+Computes Exact Match (EM) and F1 score on validation subset.
+
+5. Run API
+```bash
+python src/api.py
+```
+- Starts a Flask API for question-answering.
+- POST requests with JSON { "context": "...", "question": "..." } return predicted answers.
+
+## Evaluation
+
+EM and F1 scores on the subset (5k training / 500 validation examples):
+- EM ~48.2%
+- F1 ~59.02%
+
+> Note: Full training on GPU is expected to achieve higher scores.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
