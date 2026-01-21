@@ -16,63 +16,64 @@ def preprocess(examples):
     contexts = examples["context"]
     answers = examples["answers"]
 
-    tokenized = tokenizer(
+    """tokenized = tokenizer(
         questions,
         contexts,
         truncation=True,
         padding="max_length",
         max_length=384,
         return_offsets_mapping=True,
+    )"""
+
+    tokenized = tokenizer(
+        questions,
+        contexts,
+        truncation="only_second",  
+        max_length=384,
+        stride=128,                
+        return_overflowing_tokens=True, 
+        return_offsets_mapping=True,
+        padding="longest",        
     )
+
+    sample_mapping = tokenized.pop("overflow_to_sample_mapping")
 
     start_positions = []
     end_positions = []
 
     for i, offsets in enumerate(tokenized["offset_mapping"]):
-        answer = answers[i]
+        sample_idx = sample_mapping[i]
+        answer = answers[sample_idx]
 
-        # Character-level answer span
         start_char = answer["answer_start"][0]
         end_char = start_char + len(answer["text"][0])
-
         sequence_ids = tokenized.sequence_ids(i)
 
-        # Find context start
-        context_start = 0
-        while sequence_ids[context_start] != 1:
-            context_start += 1
-
-        # Find context end
-        context_end = len(sequence_ids) - 1
-        while sequence_ids[context_end] != 1:
-            context_end -= 1
-
-        # If answer is not fully inside the context, label as impossible
-        if not (
-            offsets[context_start][0] <= start_char
-            and offsets[context_end][1] >= end_char
-        ):
+        # context start & end in this chunk
+        context_start = next((j for j, s_id in enumerate(sequence_ids) if s_id == 1), None)
+        context_end = len(sequence_ids) - 1 - next((j for j, s_id in enumerate(reversed(sequence_ids)) if s_id == 1), None)
+        if context_start is None or context_end is None:
             start_positions.append(0)
             end_positions.append(0)
             continue
 
-        # Find token start position
+        if not (offsets[context_start][0] <= start_char and offsets[context_end][1] >= end_char):
+            start_positions.append(0)
+            end_positions.append(0)
+            continue
+
+        # token start
         token_start_index = context_start
-        while (
-            token_start_index <= context_end
-            and offsets[token_start_index][0] <= start_char
-        ):
+        while token_start_index <= context_end and offsets[token_start_index][0] <= start_char:
             token_start_index += 1
         start_positions.append(token_start_index - 1)
 
-        # Find token end position
+        # token end
         token_end_index = context_end
-        while (
-            token_end_index >= context_start
-            and offsets[token_end_index][1] >= end_char
-        ):
+        while token_end_index >= context_start and offsets[token_end_index][1] >= end_char:
             token_end_index -= 1
         end_positions.append(token_end_index + 1)
+
 
     tokenized["start_positions"] = start_positions
     tokenized["end_positions"] = end_positions

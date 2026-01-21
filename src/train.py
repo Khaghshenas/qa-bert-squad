@@ -1,6 +1,7 @@
 from datasets import load_from_disk
 #from transformers import BertForQuestionAnswering
 from transformers import DistilBertForQuestionAnswering, DistilBertTokenizerFast, Trainer, TrainingArguments
+from transformers import DataCollatorWithPadding
 
 def train():
     dataset = load_from_disk("../data/squad_tokenized")
@@ -25,7 +26,7 @@ def train():
     training_args = TrainingArguments(
         output_dir="../models/bert-qa",
         num_train_epochs=2,
-        per_device_train_batch_size=1,
+        per_device_train_batch_size=2,
         save_steps=500,
         save_total_limit=2,
         logging_dir="../logs",
@@ -39,6 +40,10 @@ def train():
     small_train = dataset["train"].shuffle(seed=42).select(range(5000))
     small_valid = dataset["validation"].shuffle(seed=42).select(range(500))
 
+    # Dynamic padding in training
+    tokenizer = DistilBertTokenizerFast.from_pretrained("../models/bert-qa")
+    data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -46,6 +51,7 @@ def train():
         #eval_dataset=dataset["validation"],
         train_dataset=small_train,
         eval_dataset=small_valid,
+        data_collator=data_collator,
     )
 
     trainer.train()
