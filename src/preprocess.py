@@ -1,8 +1,13 @@
-from transformers import BertTokenizerFast
+#from transformers import BertTokenizerFast
+from transformers import DistilBertTokenizerFast
 from datasets import load_dataset
 
 # Load tokenizer and dataset
-tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
+#tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
+tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
+
+tokenizer.save_pretrained("../models/bert-qa")
+
 dataset = load_dataset("squad")
 
 

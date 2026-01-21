@@ -1,6 +1,6 @@
 from datasets import load_from_disk
-from transformers import BertForQuestionAnswering, Trainer, TrainingArguments
-from transformers import DistilBertForQuestionAnswering, DistilBertTokenizerFast
+#from transformers import BertForQuestionAnswering
+from transformers import DistilBertForQuestionAnswering, DistilBertTokenizerFast, Trainer, TrainingArguments
 
 def train():
     dataset = load_from_disk("../data/squad_tokenized")

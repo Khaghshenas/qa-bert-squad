@@ -43,8 +43,8 @@ def evaluate():
 
     # Load model and tokenizer
     model = DistilBertForQuestionAnswering.from_pretrained("../models/bert-qa")
-    #tokenizer = DistilBertTokenizerFast.from_pretrained("../models/bert-qa")
-    tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
+    tokenizer = DistilBertTokenizerFast.from_pretrained("../models/bert-qa")
+    #tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
 
     model.eval()
     
