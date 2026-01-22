@@ -2,9 +2,12 @@ from datasets import load_from_disk
 #from transformers import BertForQuestionAnswering
 from transformers import DistilBertForQuestionAnswering, DistilBertTokenizerFast, Trainer, TrainingArguments
 from transformers import DataCollatorWithPadding
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def train():
-    dataset = load_from_disk("../data/squad_tokenized")
+    dataset = load_from_disk(os.path.join(BASE_DIR, "../data/squad_tokenized"))
 
     print("Train columns:", dataset["train"].column_names)
     print("Sample:", dataset["train"][0])
@@ -23,7 +26,7 @@ def train():
     #model = BertForQuestionAnswering.from_pretrained("bert-base-uncased")
     model = DistilBertForQuestionAnswering.from_pretrained("distilbert-base-uncased")
 
-    training_args = TrainingArguments(
+    """training_args = TrainingArguments(
         output_dir="../models/bert-qa",
         num_train_epochs=2,
         per_device_train_batch_size=2,
@@ -32,16 +35,26 @@ def train():
         logging_dir="../logs",
         remove_unused_columns=False,
         dataloader_pin_memory=False,
-    )
+    )"""
 
-    # 
-    # For demonstration and local CPU experiments, we use a smaller subset of the dataset (5k training examples instead of all 88k).
+    training_args = TrainingArguments(
+        output_dir=os.path.join(BASE_DIR, "../models/bert-qa"),
+        num_train_epochs=2,
+        per_device_train_batch_size=2,
+        save_steps=500,
+        save_total_limit=2,
+        logging_dir=os.path.join(BASE_DIR, "../logs"),
+        remove_unused_columns=False,
+        dataloader_pin_memory=False,
+    )
+    
+    # For demonstration and local CPU experiments, we use a smaller subset of the dataset (40k training examples instead of all 88k).
     # This drastically reduces training time. Full dataset training is recommended on a GPU.
-    small_train = dataset["train"].shuffle(seed=42).select(range(5000))
-    small_valid = dataset["validation"].shuffle(seed=42).select(range(500))
+    small_train = dataset["train"].shuffle(seed=42).select(range(40000))
+    small_valid = dataset["validation"].shuffle(seed=42).select(range(4000))
 
     # Dynamic padding in training
-    tokenizer = DistilBertTokenizerFast.from_pretrained("../models/bert-qa")
+    tokenizer = DistilBertTokenizerFast.from_pretrained(os.path.join(BASE_DIR, "../models/bert-qa"))
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
     trainer = Trainer(
@@ -55,7 +68,7 @@ def train():
     )
 
     trainer.train()
-    model.save_pretrained("../models/bert-qa")
+    model.save_pretrained(os.path.join(BASE_DIR, "../models/bert-qa"))
 
 if __name__ == "__main__":
     train()

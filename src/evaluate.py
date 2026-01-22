@@ -5,6 +5,9 @@ import numpy as np
 from collections import Counter
 import string
 import re
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Helper functions for EM/F1
 
@@ -36,14 +39,14 @@ def exact_match_score(prediction, ground_truth):
 
 def evaluate():
     # Load dataset
-    raw_dataset = load_from_disk("../data/squad")  # raw SQuAD dataset
+    raw_dataset = load_from_disk(os.path.join(BASE_DIR, "../data/squad"))  # raw SQuAD dataset
     raw_val_dataset = raw_dataset["validation"].shuffle(seed=42).select(range(500))
-    tokenized_dataset = load_from_disk("../data/squad_tokenized")
+    tokenized_dataset = load_from_disk(os.path.join(BASE_DIR, "../data/squad_tokenized"))
     val_dataset = tokenized_dataset["validation"].shuffle(seed=42).select(range(500))
 
     # Load model and tokenizer
-    model = DistilBertForQuestionAnswering.from_pretrained("../models/bert-qa")
-    tokenizer = DistilBertTokenizerFast.from_pretrained("../models/bert-qa")
+    model = DistilBertForQuestionAnswering.from_pretrained(os.path.join(BASE_DIR, "../models/bert-qa"))
+    tokenizer = DistilBertTokenizerFast.from_pretrained(os.path.join(BASE_DIR, "../models/bert-qa"))
     #tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
 
     model.eval()

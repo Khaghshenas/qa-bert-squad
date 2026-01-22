@@ -1,4 +1,4 @@
-# Fine-Tuning DistilBERT for Efficient Question Answering (SQuAD)
+# Fine-Tuning DistilBERT for Question Answering (SQuAD)
 
 This repository demonstrates an **end-to-end NLP pipeline** for question-answering using **DistilBERT**, trained on a **subset of the SQuAD dataset**.
 
@@ -13,9 +13,9 @@ The **Project Goal** is to:
 
 ---
 ## Key Features
-- ✅ **Dynamic Padding ** – Only pad sequences in a batch to the maximum length in that batch, reducing memory usage and improving training speed.
-- ✅ **Document Stride ** – Handles long contexts by sliding a window over them, ensuring the model can see all parts of the context while training.
-- ✅ **Tokenization with Offset Mapping ** – Maps character-level answers to token positions for accurate start/end labels.
+- **Dynamic Padding** – Only pad sequences in a batch to the maximum length in that batch, reducing memory usage and improving training speed.
+- **Document Stride** – Handles long contexts by sliding a window over them, ensuring the model can see all parts of the context while training.
+- **Tokenization with Offset Mapping** – Maps character-level answers to token positions for accurate start/end labels.
 
 ---
 ## Model Predictions
@@ -35,6 +35,7 @@ Here's a glimpse of what our fine-tuned model can do. These results are generate
 qa-bert-squad/
 ├── data/ # raw & preprocessed dataset
 │ └── squad/
+│ └── squad_tokenized/
 ├── src/
 │ ├──__init__.py
 │ ├── download_data.py 
@@ -121,9 +122,9 @@ python src/api.py
 ---
 ## Evaluation
 
-EM and F1 scores on the subset (5k training / 500 validation examples):
-- EM ~52.20%
-- F1 ~63.95%
+EM and F1 scores on the subset (40k training / 4000 validation examples):
+- EM ~63.20%
+- F1 ~74.38%
 
 > Note: Full training on GPU is expected to achieve higher scores.
 ---
