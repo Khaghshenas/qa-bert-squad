@@ -29,6 +29,14 @@ Here's a glimpse of what our fine-tuned model can do. These results are generate
 | What does CPU stand for? | The CPU (Central Processing Unit) is the brain of a computer. | Central Processing Unit |
 
 ---
+## Evaluation
+
+EM and F1 scores on the subset (40k training / 4000 validation examples):
+- EM ~63.20%
+- F1 ~74.38%
+
+> Note: Full training on GPU is expected to achieve higher scores.
+---
 ## Project Structure
 
 ```text
@@ -120,14 +128,7 @@ python src/api.py
 - Starts a Flask API for question-answering.
 - POST requests with JSON { "context": "...", "question": "..." } return predicted answers.
 ---
-## Evaluation
 
-EM and F1 scores on the subset (40k training / 4000 validation examples):
-- EM ~63.20%
-- F1 ~74.38%
-
-> Note: Full training on GPU is expected to achieve higher scores.
----
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
